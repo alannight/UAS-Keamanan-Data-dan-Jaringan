@@ -2,48 +2,447 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Penerbitan Dokumen (Sign)</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="/">10 Dosa Besar Fiqri</a>
-            <div class="navbar-nav">
-                <a class="nav-link active" href="/">Sign Dokumen</a>
-                <a class="nav-link" href="/verify">Verify Dokumen</a>
-            </div>
-        </div>
-    </nav>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiSign — Penerbitan Dokumen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Penerbitan Dokumen (Sign)</h5>
+        :root {
+            --bg:        #0d1117;
+            --surface:   #161b22;
+            --border:    #21262d;
+            --accent:    #58a6ff;
+            --accent-glow: rgba(88,166,255,0.15);
+            --green:     #3fb950;
+            --green-glow: rgba(63,185,80,0.15);
+            --red:       #f85149;
+            --yellow:    #d29922;
+            --text:      #e6edf3;
+            --muted:     #8b949e;
+            --mono:      'JetBrains Mono', monospace;
+            --sans:      'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── NAV ─────────────────────────────────── */
+        nav {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .nav-brand .logo-icon {
+            width: 28px; height: 28px;
+            background: linear-gradient(135deg, var(--accent), #79c0ff);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+        }
+
+        .nav-links { display: flex; gap: 4px; }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 0.875rem;
+            padding: 6px 14px;
+            border-radius: 6px;
+            transition: all 0.15s;
+        }
+
+        .nav-links a:hover { color: var(--text); background: var(--border); }
+        .nav-links a.active {
+            color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        /* ── MAIN ────────────────────────────────── */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+        }
+
+        .card-wrap { width: 100%; max-width: 480px; }
+
+        /* ── HERO LABEL ──────────────────────────── */
+        .hero-label {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+        }
+
+        .hero-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.25;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-sub {
+            font-size: 0.875rem;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        /* ── CARD ────────────────────────────────── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-badge {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(88,166,255,0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .card-header h2 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .card-body { padding: 1.5rem; }
+
+        /* ── ALERTS ──────────────────────────────── */
+        .alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.5;
+        }
+
+        .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+        .alert-success {
+            background: var(--green-glow);
+            border: 1px solid rgba(63,185,80,0.4);
+            color: var(--green);
+        }
+
+        .alert-danger {
+            background: rgba(248,81,73,0.1);
+            border: 1px solid rgba(248,81,73,0.4);
+            color: var(--red);
+        }
+
+        .alert-warning {
+            background: rgba(210,153,34,0.1);
+            border: 1px solid rgba(210,153,34,0.4);
+            color: var(--yellow);
+        }
+
+        /* ── FORM ────────────────────────────────── */
+        .form-group { margin-bottom: 1.25rem; }
+
+        label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.02em;
+        }
+
+        /* ── FILE DROP ZONE ──────────────────────── */
+        .file-drop {
+            position: relative;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-drop:hover, .file-drop.drag-over {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .file-drop input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%; height: 100%;
+        }
+
+        .file-drop-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .file-drop-text {
+            font-size: 0.875rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .file-drop-text strong {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .file-name-display {
+            margin-top: 0.75rem;
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            color: var(--green);
+            display: none;
+        }
+
+        .file-name-display.visible { display: block; }
+
+        /* ── INFO BOX ────────────────────────────── */
+        .info-box {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .info-box-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.6rem;
+        }
+
+        .info-box-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8125rem;
+            padding: 3px 0;
+        }
+
+        .info-box-row .key { color: var(--muted); }
+        .info-box-row .val {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+        }
+
+        /* ── BUTTON ──────────────────────────────── */
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-family: var(--sans);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0d1117;
+        }
+
+        .btn-primary:hover {
+            background: #79c0ff;
+            box-shadow: 0 0 16px rgba(88,166,255,0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* ── FOOTER ──────────────────────────────── */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+            font-family: var(--mono);
+        }
+
+        footer span { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a class="nav-brand" href="/">
+        <div class="logo-icon">🔏</div>
+        DigiSign
+    </a>
+    <div class="nav-links">
+        <a href="/" class="active">Sign Dokumen</a>
+        <a href="/verify">Verify Dokumen</a>
+    </div>
+</nav>
+
+<main>
+    <div class="card-wrap">
+
+        <p class="hero-label">// RSA-2048 · SHA-256 · PKCS#1</p>
+        <h1 class="hero-title">Penerbitan Tanda Tangan<br>Digital</h1>
+        <p class="hero-sub">Unggah file PDF untuk mendapatkan <em>digital signature</em> (.sig) yang dihasilkan menggunakan RSA Private Key.</p>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="step-badge">STEP 01</span>
+                <h2>Penerbitan Dokumen (Sign)</h2>
+            </div>
+            <div class="card-body">
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <span class="alert-icon">
+                                {% if category == 'success' %}✓{% elif category == 'danger' %}✕{% else %}⚠{% endif %}
+                            </span>
+                            <span>{{ message }}</span>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <div class="info-box">
+                    <div class="info-box-title">Konfigurasi Sistem</div>
+                    <div class="info-box-row">
+                        <span class="key">Algoritma</span>
+                        <span class="val">RSA-2048</span>
                     </div>
-                    <div class="card-body">
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                            {% if messages %}
-                                {% for category, message in messages %}
-                                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                                {% endfor %}
-                            {% endif %}
-                        {% endwith %}
-                        
-                        <p class="text-muted">Unggah PDF asli dari kampus. Sistem akan memberikan Digital Signature (.sig).</p>
-                        <form method="POST" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label for="pdf_file" class="form-label">Pilih Dokumen (PDF)</label>
-                                <input class="form-control" type="file" id="pdf_file" name="pdf_file" accept=".pdf" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">Buat Tanda Tangan (Sign)</button>
-                        </form>
+                    <div class="info-box-row">
+                        <span class="key">Hash</span>
+                        <span class="val">SHA-256</span>
+                    </div>
+                    <div class="info-box-row">
+                        <span class="key">Padding</span>
+                        <span class="val">PKCS#1 v1.5</span>
+                    </div>
+                    <div class="info-box-row">
+                        <span class="key">Output</span>
+                        <span class="val">.sig (binary)</span>
                     </div>
                 </div>
+
+                <form method="POST" enctype="multipart/form-data" id="signForm">
+                    <div class="form-group">
+                        <label>Pilih Dokumen PDF</label>
+                        <div class="file-drop" id="dropZone">
+                            <input type="file" name="pdf_file" id="pdf_file" accept=".pdf" required
+                                   onchange="handleFile(this)">
+                            <span class="file-drop-icon">📄</span>
+                            <div class="file-drop-text">
+                                <strong>Klik untuk memilih</strong> atau seret file ke sini<br>
+                                Hanya file PDF yang diterima
+                            </div>
+                            <div class="file-name-display" id="fileNameDisplay"></div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        🔏 Buat Tanda Tangan (Sign)
+                    </button>
+                </form>
             </div>
         </div>
+
     </div>
+</main>
+
+<footer>
+    Sistem Keamanan Data &amp; Jaringan — UAS &nbsp;|&nbsp; <span>RSA Digital Signature</span>
+</footer>
+
+<script>
+    function handleFile(input) {
+        const display = document.getElementById('fileNameDisplay');
+        if (input.files && input.files[0]) {
+            const f = input.files[0];
+            const sizeMB = (f.size / (1024 * 1024)).toFixed(2);
+            display.textContent = `✓  ${f.name}  (${sizeMB} MB)`;
+            display.classList.add('visible');
+        }
+    }
+
+    // Drag & drop styling
+    const zone = document.getElementById('dropZone');
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag-over'); });
+
+    // Prevent double-submit
+    document.getElementById('signForm').addEventListener('submit', function() {
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Memproses...';
+    });
+</script>
+
 </body>
 </html>
